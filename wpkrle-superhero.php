@@ -199,6 +199,22 @@ function wpkrle_superhero_display_single_hero( $content ) {
 		$content .= '<strong>' . __( 'Creator: ', 'wpkrle-superheroes' ) . '</strong>';
 		$content .= esc_html( get_post_meta( get_the_ID(), 'superhero_creator', true ) );
 		$content .= '<br />';
+		// Display Publisher Taxonomy
+		$wpkrle_superhero_publishers = wp_get_post_terms( get_the_ID(), 'wpkrle-superhero_publisher' );
+		$content .= '<strong>' . __('Publisher: ', 'wpkrle-superheroes') . '</strong>';
+		if ( $wpkrle_superhero_publishers ) {
+			$first_entry = true;
+			for ( $i = 0; $i < count( $wpkrle_superhero_publishers ); $i++ ) {
+				if ( !$first_entry ) {
+					$content .= ', ';
+				}
+				$content .= $wpkrle_superhero_publishers[$i]->name;
+				$first_entry = false;
+			}
+		} else {
+			$content .= __( 'None Assigned', 'wpkrle-superheroes' );
+		}
+		$content .= '<br />';
 		// Display First Appearance
 		$content .= '<strong>' . __( 'First Appearance: ', 'wpkrle-superheroes' ) . '</strong>';
 		$content .= esc_html( get_post_meta( get_the_ID(), 'superhero_first_appearance', true ) );
