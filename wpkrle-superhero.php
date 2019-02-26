@@ -21,25 +21,42 @@ add_action('init', 'wpkrle_superheroes_custom_post_type');
 
 function wpkrle_superheroes_custom_post_type()
 {
-    register_post_type('wpkrle_superhero',
-                       array(
-                           'labels'      => array(
-                               'name'          => __( 'Superheroes', 'wpkrle-superheroes' ),
-                               'singular_name' => __( 'Superhero', 'wpkrle-superheroes' ),
-                               'add_new_item'  => __( 'Add new superhero', 'wpkrle-superheroes' ),
-                               'edit_item'	   => __( 'Edit superhero', 'wpkrle-superheroes' ),
-                               'all_items'	   => __( 'All superheroes', 'wpkrle-superheroes' ),
+    register_post_type(
+    		'wpkrle_superhero',
+           	array(
+               'labels'      => array(
+                   'name'          => __( 'Superheroes', 'wpkrle-superheroes' ),
+                   'singular_name' => __( 'Superhero', 'wpkrle-superheroes' ),
+                   'add_new_item'  => __( 'Add new superhero', 'wpkrle-superheroes' ),
+                   'edit_item'	   => __( 'Edit superhero', 'wpkrle-superheroes' ),
+                   'all_items'	   => __( 'All superheroes', 'wpkrle-superheroes' ),
 
-                           ),
-                           'public'      => true,
-                           'has_archive' => true,
-                           'supports'	 => array( 'title', 'editor', 'comments', 'thumbnail'),
-                           'taxonomies' => array( '' ),
-                           'rewrite'     => array( 'slug' => 'superheroes' ), 
-                           'menu_icon'   => plugins_url( 'superhero.png', __FILE__ ),
-                           10
-                       )
+               ),
+               'public'      => true,
+               'has_archive' => true,
+               'supports'	 => array( 'title', 'editor', 'comments', 'thumbnail'),
+               'taxonomies'  => array( '' ),
+               'rewrite'     => array( 'slug' => 'superheroes' ), 
+               'menu_icon'   => plugins_url( 'superhero.png', __FILE__ ),
+               10
+           )
     );
+    register_taxonomy(
+			'wpkrle-superhero_publisher',
+			'wpkrle_superhero',
+			array(
+				'labels' => array(
+				'name' => __( 'Publishers', 'wpkrle-superheroes' ),
+				'singular_name' => __( 'Publisher', 'wpkrle-superheroes' ),
+				'add_new_item' => __('Add New Publisher', 'wpkrle-superheroes'),
+				'new_item_name' => __( 'New Publisher Name', 'wpkrle-superheroes' ),
+				'edit_item'	   => __( 'Edit Publisher Name', 'wpkrle-superheroes' ),
+			),
+			'show_ui' => true,
+			'show_tagcloud' => false,
+			'hierarchical' => true
+		)
+	);
 }
 
 
@@ -79,7 +96,7 @@ add_action( 'admin_init', 'wpkrle_superhero_admin_init' );
 function wpkrle_superhero_admin_init() {
 	add_meta_box( 
 		'wpkrle_superhero_facts_meta_box',
-		'Superhero facts',
+		__('Superhero Facts', 'wpkrle-superheroes' ),
 		'wpkrle_superhero_display_facts_meta_box_html',
 		'wpkrle_superhero', 
 		'normal', 
@@ -98,19 +115,19 @@ function wpkrle_superhero_display_facts_meta_box_html( $superhero_facts )
 
 	<table>
 		<tr>
-			<td style="width: 100%">Superhero Full Name</td>
+			<td style="width: 100%"><?php _e( 'Superhero Full Name', 'wpkrle-superheroes' ) ?></td>
 			<td><input type="text" size="80" name="superhero_full_name" value="<?php echo $superhero_full_name; ?>" /></td>
 		</tr>
 		<tr>
-			<td style="width: 100%">Superhero Creator</td>
+			<td style="width: 100%"><?php _e( 'Superhero Creator', 'wpkrle-superheroes' ) ?></td>
 			<td><input type="text" size="80" name="superhero_creator_name" value="<?php echo $superhero_creator; ?>" /></td>
 		</tr>
 		<tr>
-			<td style="width: 100%">First Appearance</td>
+			<td style="width: 100%"><?php _e( 'First Appearance', 'wpkrle-superheroes' ) ?></td>
 			<td><input type="text" size="80" name="superhero_first_appearance" value="<?php echo $superhero_first_appearance; ?>" /></td>
 		</tr>
 		<tr>
-			<td style="width: 150px">Superhero Rating</td>
+			<td style="width: 150px"><?php _e( 'Superhero Rating', 'wpkrle-superheroes' ) ?></td>
 			<td>
 			<select style="width: 100px" name="superhero_rating">
 	
@@ -118,7 +135,7 @@ function wpkrle_superhero_display_facts_meta_box_html( $superhero_facts )
 			for ( $rating = 5; $rating >= 1; $rating -- ) { ?>
 				<option value="<?php echo $rating; ?>"
 				<?php echo selected( $rating, $superhero_rating ); ?>>
-				<?php echo $rating; ?> stars
+				<?php echo $rating . ' ' . __( 'stars', 'wpkrle-superheroes' ); ?>
 		<?php } ?>
 			</select>
 		</td>
@@ -150,7 +167,7 @@ function wpkrle_superhero_add_facts_fields( $superhero_facts_id, $superhero_fact
 	}
 }
 
-
+//Front - adding filter to format content for displaying wpkrle_superhero post type
 add_filter( 'template_include', 'wpkrle_superhero_include', 1 );
 
 function wpkrle_superhero_include( $template_path ) {
@@ -175,19 +192,19 @@ function wpkrle_superhero_display_single_hero( $content ) {
 		$content .= '</div>';
 		$content .= '<div class="entry-content">';
 		// Display Superhero Full Name
-		$content .= '<strong>Full Name: </strong>';
+		$content .= '<strong>' . __('Full Name: ', 'wpkrle-superheroes' ) . '</strong>';
 		$content .= esc_html( get_post_meta( get_the_ID(), 'superhero_full_name', true ) );
 		$content .= '<br />';
 		// Display Creator Name
-		$content .= '<strong>Creator: </strong>';
+		$content .= '<strong>' . __( 'Creator: ', 'wpkrle-superheroes' ) . '</strong>';
 		$content .= esc_html( get_post_meta( get_the_ID(), 'superhero_creator', true ) );
 		$content .= '<br />';
 		// Display First Appearance
-		$content .= '<strong>First Appearance: </strong>';
+		$content .= '<strong>' . __( 'First Appearance: ', 'wpkrle-superheroes' ) . '</strong>';
 		$content .= esc_html( get_post_meta( get_the_ID(), 'superhero_first_appearance', true ) );
 		$content .= '<br />';
 		// Display yellow stars based on rating -->
-		$content .= '<strong>Rating: </strong>';
+		$content .= '<strong>' . __( 'Rating: ', 'wpkrle-superheroes' ) . '</strong>';
 		$nb_stars = intval( get_post_meta( get_the_ID(), 'superhero_rating', true ) );
 		for ( $star_counter = 1; $star_counter <= 5; $star_counter++ ) {
 			if ( $star_counter <= $nb_stars ) {
@@ -203,5 +220,6 @@ function wpkrle_superhero_display_single_hero( $content ) {
 		return $content;
 	}
 }
+
 
 ?>
